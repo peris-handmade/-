@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ハンドメイド作家 販売スタイル診断</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #d4735e;
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #888;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .question {
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #d4735e;
+        }
+        
+        .question-text {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .question-number {
+            color: #d4735e;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .answer-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .answer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .answer-btn.selected-yes {
+            background: #d4735e;
+            color: white;
+            border-color: #d4735e;
+        }
+        
+        .answer-btn.selected-no {
+            background: #95a5a6;
+            color: white;
+            border-color: #95a5a6;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #d4735e;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background: #c45d48;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 115, 94, 0.3);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .result-title {
+            font-size: 22px;
+            color: #d4735e;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .result-score {
+            font-size: 48px;
+            color: #d4735e;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .result-text {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .result-recommendation {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        
+        .result-recommendation h3 {
+            color: #d4735e;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .result-recommendation ul {
+            list-style-position: inside;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .reset-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: white;
+            color: #d4735e;
+            border: 2px solid #d4735e;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .reset-btn:hover {
+            background: #d4735e;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 ハンドメイド作家 販売スタイル診断</h1>
+        <p class="subtitle">あなたに向いている販売方法を見つけましょう</p>
+        
+        <div id="quiz">
+            <div class="question">
+                <div class="question-text">
+                    <span class="question-number">Q1.</span>
+                    制作に集中したい期間と販売に集中したい期間を分けたいですか?
+                </div>
+                <div class="button-group">
+                    <button class="answer-btn" onclick="selectAnswer(0, true)">はい</button>
+                    <button class="answer-btn" onclick="selectAnswer(0, false)">いいえ</button>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-text">
+                    <span class="question-number">Q2.</span>
+                    販売に向けた準備を計画的に進められ、締切があった方がやる気が出ますか?
+                </div>
+                <div class="button-group">
+                    <button class="answer-btn" onclick="selectAnswer(1, true)">はい</button>
+                    <button class="answer-btn" onclick="selectAnswer(1, false)">いいえ</button>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-text">
+                    <span class="question-number">Q3.</span>
+                    在庫管理や発送作業を毎日継続するのは負担に感じますか?
+                </div>
+                <div class="button-group">
+                    <button class="answer-btn" onclick="selectAnswer(2, true)">はい</button>
+                    <button class="answer-btn" onclick="selectAnswer(2, false)">いいえ</button>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-text">
+                    <span class="question-number">Q4.</span>
+                    「期間限定」「特別販売」といった特別感のある売り方に魅力を感じますか?
+                </div>
+                <div class="button-group">
+                    <button class="answer-btn" onclick="selectAnswer(3, true)">はい</button>
+                    <button class="answer-btn" onclick="selectAnswer(3, false)">いいえ</button>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-text">
+                    <span class="question-number">Q5.</span>
+                    一度にまとめて作品を制作する方が効率的だと感じますか?
+                </div>
+                <div class="button-group">
+                    <button class="answer-btn" onclick="selectAnswer(4, true)">はい</button>
+                    <button class="answer-btn" onclick="selectAnswer(4, false)">いいえ</button>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-text">
+                    <span class="question-number">Q6.</span>
+                    販売会の準備や告知をすることでモチベーションが上がりますか?
+                </div>
+                <div class="button-group">
+                    <button class="answer-btn" onclick="selectAnswer(5, true)">はい</button>
+                    <button class="answer-btn" onclick="selectAnswer(5, false)">いいえ</button>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-text">
+                    <span class="question-number">Q7.</span>
+                    本業や家事・育児があり、ハンドメイドは限られた時間で取り組んでいますか?
+                </div>
+                <div class="button-group">
+                    <button class="answer-btn" onclick="selectAnswer(6, true)">はい</button>
+                    <button class="answer-btn" onclick="selectAnswer(6, false)">いいえ</button>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-text">
+                    <span class="question-number">Q8.</span>
+                    売上の波があっても、短期間で集中的に売上を上げる方が好きですか?
+                </div>
+                <div class="button-group">
+                    <button class="answer-btn" onclick="selectAnswer(7, true)">はい</button>
+                    <button class="answer-btn" onclick="selectAnswer(7, false)">いいえ</button>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-text">
+                    <span class="question-number">Q9.</span>
+                    季節やイベントに合わせた作品展開をするのが楽しいですか?
+                </div>
+                <div class="button-group">
+                    <button class="answer-btn" onclick="selectAnswer(8, true)">はい</button>
+                    <button class="answer-btn" onclick="selectAnswer(8, false)">いいえ</button>
+                </div>
+            </div>
+
+            <div class="question">
+                <div class="question-text">
+                    <span class="question-number">Q10.</span>
+                    顧客からの問い合わせ対応を常時行うよりも、期間を決めて対応したいですか?
+                </div>
+                <div class="button-group">
+                    <button class="answer-btn" onclick="selectAnswer(9, true)">はい</button>
+                    <button class="answer-btn" onclick="selectAnswer(9, false)">いいえ</button>
+                </div>
+            </div>
+
+            <button class="submit-btn" id="submitBtn" onclick="showResult()" disabled>診断結果を見る</button>
+        </div>
+
+        <div class="result" id="result">
+            <div class="result-title">診断結果</div>
+            <div class="result-score"><span id="yesCount">0</span> / 10</div>
+            <div class="result-text" id="resultText"></div>
+            <div class="result-recommendation" id="recommendation"></div>
+            <button class="reset-btn" onclick="resetQuiz()">もう一度診断する</button>
+        </div>
+    </div>
+
+    <script>
+        let answers = new Array(10).fill(null);
+
+        function selectAnswer(questionIndex, isYes) {
+            answers[questionIndex] = isYes;
+            
+            const question = document.querySelectorAll('.question')[questionIndex];
+            const buttons = question.querySelectorAll('.answer-btn');
+            
+            buttons.forEach(btn => {
+                btn.classList.remove('selected-yes', 'selected-no');
+            });
+            
+            if (isYes) {
+                buttons[0].classList.add('selected-yes');
+            } else {
+                buttons[1].classList.add('selected-no');
+            }
+            
+            checkAllAnswered();
+        }
+
+        function checkAllAnswered() {
+            const allAnswered = answers.every(answer => answer !== null);
+            document.getElementById('submitBtn').disabled = !allAnswered;
+        }
+
+        function showResult() {
+            const yesCount = answers.filter(answer => answer === true).length;
+            document.getElementById('yesCount').textContent = yesCount;
+            
+            const resultText = document.getElementById('resultText');
+            const recommendation = document.getElementById('recommendation');
+            
+            if (yesCount >= 6) {
+                resultText.innerHTML = `
+                    <strong style="color: #d4735e; font-size: 24px;">販売会スタイルがおすすめです!</strong><br><br>
+                    あなたには期間限定の販売会スタイルが向いています。制作と販売のメリハリをつけることで、集中力を高め、特別感のある販売を実現できます。
+                `;
+                
+                recommendation.innerHTML = `
+                    <h3>📅 販売会スタイルのメリット</h3>
+                    <ul>
+                        <li>制作期間と販売期間を明確に分けられる</li>
+                        <li>期間限定の特別感で購買意欲を高められる</li>
+                        <li>まとめて作業できるため効率的</li>
+                        <li>イベント感覚で楽しく販売できる</li>
+                        <li>本業や家事との両立がしやすい</li>
+                    </ul>
+                `;
+            } else if (yesCount === 5) {
+                resultText.innerHTML = `
+                    <strong style="color: #9b59b6; font-size: 24px;">ハイブリッド販売がおすすめです!</strong><br><br>
+                    あなたには常時販売と販売会を組み合わせたハイブリッド販売が向いています。定番商品は常時販売し、新作や限定品は販売会で展開する「いいとこ取り」スタイルです。
+                `;
+                
+                recommendation.innerHTML = `
+                    <h3>✨ ハイブリッド販売のメリット</h3>
+                    <ul>
+                        <li>安定した売上と特別感の両方を実現</li>
+                        <li>定番商品で継続収入、限定品でイベント感</li>
+                        <li>お客様に多様な購入機会を提供</li>
+                        <li>販売スタイルを柔軟に調整できる</li>
+                        <li>両方の良さを活かせる</li>
+                    </ul>
+                `;
+            } else {
+                resultText.innerHTML = `
+                    <strong style="color: #5e9ed4; font-size: 24px;">常時販売スタイルがおすすめです!</strong><br><br>
+                    あなたには常時販売スタイルが向いています。安定した販売活動で、お客様との継続的な関係を築き、安定収入を得られます。
+                `;
+                
+                recommendation.innerHTML = `
+                    <h3>🏪 常時販売スタイルのメリット</h3>
+                    <ul>
+                        <li>いつでも購入できる安心感を提供</li>
+                        <li>安定した売上を見込める</li>
+                        <li>お客様との継続的な関係構築</li>
+                        <li>コツコツと着実に販売できる</li>
+                        <li>在庫や注文ペースを自分で調整可能</li>
+                    </ul>
+                `;
+            }
+            
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('result').classList.add('show');
+        }
+
+        function resetQuiz() {
+            answers = new Array(10).fill(null);
+            
+            document.querySelectorAll('.answer-btn').forEach(btn => {
+                btn.classList.remove('selected-yes', 'selected-no');
+            });
+            
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('quiz').style.display = 'block';
+            document.getElementById('result').classList.remove('show');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
